@@ -112,54 +112,63 @@ class ExpenseController extends Controller
 
         // Totales básicos (Gasto real este mes)
         $monthQuery = (clone $baseQuery)->where('date', '>=', $startOfMonth)->where('type', 'gasto');
+        $monthExpenses = $monthQuery->get();
         
-        $dayTotal = (clone $monthQuery)->whereDate('date', $today)->sum('amount');
+        $dayTotal = $monthExpenses->filter(fn($e) => $e->date == $today)->sum(fn($e) => (float)$e->amount);
         
         // Suma de gastos normales + recurrentes activos
-        $recurringTotal = (clone $baseQuery)->where('is_recurring', true)->where('is_active', true)->where('type', 'gasto')->sum('amount');
-        $monthTotal = (clone $monthQuery)->where('is_recurring', false)->sum('amount') + $recurringTotal;
+        $recurringExpenses = (clone $baseQuery)->where('is_recurring', true)->where('is_active', true)->where('type', 'gasto')->get();
+        $recurringTotal = $recurringExpenses->sum(fn($e) => (float)$e->amount);
+        
+        $monthTotal = $monthExpenses->filter(fn($e) => !$e->is_recurring)->sum(fn($e) => (float)$e->amount) + $recurringTotal;
 
         // Desglose Compartido vs Personal (Mes actual)
-        $sharedTotal = (clone $monthQuery)->where('is_personal', false)->where('is_recurring', false)->sum('amount') + $recurringTotal;
-        $personalTotal = (clone $monthQuery)->where('is_personal', true)->sum('amount');
+        $sharedTotal = $monthExpenses->filter(fn($e) => !$e->is_personal && !$e->is_recurring)->sum(fn($e) => (float)$e->amount) + $recurringTotal;
+        $personalTotal = $monthExpenses->filter(fn($e) => $e->is_personal)->sum(fn($e) => (float)$e->amount);
 
         // Deudas (Saldo histórico acumulado NO pagado)
-        $meDeben = (clone $baseQuery)->where('type', 'deuda')->where('debt_direction', 'to_me')->where('is_paid', false)->sum('amount');
-        $yoDebo = (clone $baseQuery)->where('type', 'deuda')->where('debt_direction', 'to_them')->where('is_paid', false)->sum('amount');
-
-        // Desglose por Categoría (Mes actual)
-        $categories = (clone $monthQuery)
-            ->leftJoin('categories', 'expenses.category_id', '=', 'categories.id')
-            ->selectRaw('CONCAT(COALESCE(categories.icon, "💰"), " ", COALESCE(categories.name, "Sin Categoría")) as label, SUM(expenses.amount) as total')
-            ->groupBy('label')
-            ->orderBy('total', 'desc')
-            ->get();
-
-        // Desglose por Pagador (Mes actual)
-        $byPayer = (clone $monthQuery)
-            ->selectRaw('payer, SUM(amount) as total')
-            ->groupBy('payer')
-            ->get();
+        $debts = (clone $baseQuery)->where('type', 'deuda')->where('is_paid', false)->get();
+        $meDeben = $debts->where('debt_direction', 'to_me')->sum(fn($e) => (float)$e->amount);
+        $yoDebo = $debts->where('debt_direction', 'to_them')->sum(fn($e) => (float)$e->amount);
 
         // Cálculo de Liquidación (Michelle vs Omer)
-        // Solo basándose en GASTOS COMPARTIDOS
-        $sharedQuery = (clone $monthQuery)->where('is_personal', false);
-        $paidByUser = (clone $sharedQuery)->where('payer', auth()->user()->name)->sum('amount');
+        $sharedMonthExpenses = $monthExpenses->filter(fn($e) => !$e->is_personal);
+        $paidByUser = $sharedMonthExpenses->where('payer', auth()->user()->name)->sum(fn($e) => (float)$e->amount);
         $paidByPartner = 0;
         if (auth()->user()->partner) {
-            $paidByPartner = (clone $sharedQuery)->where('payer', auth()->user()->partner->name)->sum('amount');
+            $paidByPartner = $sharedMonthExpenses->where('payer', auth()->user()->partner->name)->sum(fn($e) => (float)$e->amount);
         }
         
         $totalShared = $paidByUser + $paidByPartner;
         $fairShare = $totalShared / 2;
-        $netBalance = $paidByUser - $fairShare; // Positivo: me deben, Negativo: debo
+        $netBalance = $paidByUser - $fairShare;
+
+        // Integrar la liquidación en los totales de deudas para evitar confusión
+        if ($netBalance > 0) {
+            $meDeben += $netBalance;
+        } elseif ($netBalance < 0) {
+            $yoDebo += abs($netBalance);
+        }
+
+        // Desglose por Categoría (Mes actual)
+        $categories = $monthExpenses->groupBy(function($e) {
+            $cat = $e->category;
+            return ($cat->icon ?? '💰') . ' ' . ($cat->name ?? 'Sin Categoría');
+        })->map(function($group, $label) {
+            return ['label' => $label, 'total' => (float)$group->sum(fn($e) => (float)$e->amount)];
+        })->values()->sortByDesc('total');
+
+        // Desglose por Pagador (Mes actual)
+        $byPayer = $monthExpenses->groupBy('payer')->map(function($group, $payer) {
+            return ['payer' => $payer, 'total' => (float)$group->sum(fn($e) => (float)$e->amount)];
+        })->values();
 
         // Presupuestos Totales
         $allBudgets = Budget::where('user_id', auth()->id())->get();
         $totalLimit = $allBudgets->sum('amount');
         $totalSpentInBudgetedCategories = 0;
         foreach($allBudgets as $b) {
-            $totalSpentInBudgetedCategories += (clone $monthQuery)->where('category_id', $b->category_id)->sum('amount');
+            $totalSpentInBudgetedCategories += $monthExpenses->where('category_id', $b->category_id)->sum(fn($e) => (float)$e->amount);
         }
 
         // Invitaciones de Pareja Pendientes
@@ -283,7 +292,8 @@ class ExpenseController extends Controller
                     $query->where('is_personal', false)
                           ->orWhere('user_id', auth()->id());
                 })
-                ->sum('amount');
+                ->get()
+                ->sum(fn($e) => (float)$e->amount);
 
             $last6Months[] = [
                 'month' => $month->translatedFormat('M'),

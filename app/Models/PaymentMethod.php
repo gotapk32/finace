@@ -17,4 +17,8 @@ class PaymentMethod extends Model
     {
         return $this->hasMany(Expense::class);
     }
+
+    protected $casts = [
+        'name' => 'encrypted',
+    ];
 }

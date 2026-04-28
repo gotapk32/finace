@@ -37,7 +37,8 @@ class BudgetController extends Controller
                     $q->where('is_personal', false)
                       ->orWhere('user_id', auth()->id());
                 })
-                ->sum('amount');
+                ->get()
+                ->sum(fn($e) => (float)$e->amount);
             
             $budget->spent = $spent;
             $budget->progress = $budget->amount > 0 ? min(100, ($spent / $budget->amount) * 100) : 0;
@@ -74,7 +75,8 @@ class BudgetController extends Controller
                     $q->where('is_personal', false)
                       ->orWhere('user_id', auth()->id());
                 })
-                ->sum('amount');
+                ->get()
+                ->sum(fn($e) => (float)$e->amount);
             
             return [
                 'id' => $b->id,

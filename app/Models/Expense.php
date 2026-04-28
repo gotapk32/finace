@@ -26,4 +26,13 @@ class Expense extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $casts = [
+        'name' => 'encrypted',
+        'amount' => 'encrypted',
+        'payer' => 'encrypted',
+        'is_personal' => 'boolean',
+        'is_recurring' => 'boolean',
+        'is_active' => 'boolean',
+    ];
 }

@@ -15,7 +15,7 @@ class AdminController extends Controller
         $invitations = UserInvitation::orderBy('id', 'desc')->get();
         
         $totalTransactions = \App\Models\Expense::count();
-        $totalMoney = \App\Models\Expense::sum('amount');
+        $totalMoney = \App\Models\Expense::all()->sum(fn($e) => (float)$e->amount);
 
         return view('admin.dashboard', compact('users', 'invitations', 'totalTransactions', 'totalMoney'));
     }

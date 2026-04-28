@@ -6,6 +6,7 @@
     <title>Login - GASTOS</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     <style>
         .auth-container {
@@ -80,6 +81,14 @@
 
             <div class="footer-link">
                 ¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate</a>
+            </div>
+
+            <div style="margin-top: 2rem; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 15px; border: 1px solid rgba(99, 102, 241, 0.1); display: flex; align-items: center; gap: 12px; text-align: left;">
+                <i class="fas fa-shield-halved" style="color: var(--primary); font-size: 1.2rem;"></i>
+                <p style="font-size: 0.65rem; line-height: 1.4; color: var(--text-muted); margin: 0;">
+                    <strong style="color: var(--primary); display: block; margin-bottom: 2px;">SEGURIDAD DE DATOS</strong>
+                    Tus gastos y sueldos están protegidos con cifrado de grado bancario. Solo tú y tu pareja pueden ver la información.
+                </p>
             </div>
         </div>
     </div>
