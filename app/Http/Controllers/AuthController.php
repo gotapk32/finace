@@ -7,8 +7,42 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
+use App\Models\UserInvitation;
+
 class AuthController extends Controller
 {
+    public function storeUserInvitation(Request $request) {
+        $user = auth()->user();
+        
+        // Solo 1 invitación por usuario no-admin
+        if (!$user->is_admin) {
+            $existing = UserInvitation::where('created_by_user_id', $user->id)->exists();
+            if ($existing) {
+                return back()->withErrors(['partner_email' => 'Ya has usado tu invitación permitida.']);
+            }
+        }
+
+        $request->validate([
+            'email' => 'required|email|unique:users,email|unique:user_invitations,email',
+        ]);
+
+        $token = \Illuminate\Support\Str::random(40);
+        
+        UserInvitation::create([
+            'email' => $request->email,
+            'token' => $token,
+            'status' => 'pending',
+            'created_by_user_id' => $user->id
+        ]);
+
+        return back()->with('status', 'Link de invitación generado con éxito.');
+    }
+
+    public function showRegisterByToken($token) {
+        $invitation = UserInvitation::where('token', $token)->where('status', 'pending')->firstOrFail();
+        return view('auth.register', ['email' => $invitation->email, 'token' => $token]);
+    }
+
     public function showLogin() {
         return view('auth.login');
     }
@@ -38,6 +72,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'token' => 'nullable|string'
         ]);
 
         $user = User::create([
@@ -45,6 +80,28 @@ class AuthController extends Controller
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
+
+        if ($request->filled('token')) {
+            $invitation = UserInvitation::where('token', $request->token)
+                ->where('email', $request->email)
+                ->first();
+            if ($invitation) {
+                $invitation->status = 'accepted';
+                $invitation->save();
+
+                // Vincular automáticamente si fue creado por un usuario
+                if ($invitation->created_by_user_id) {
+                    $creator = User::find($invitation->created_by_user_id);
+                    if ($creator) {
+                        $user->partner_id = $creator->id;
+                        $user->save();
+                        
+                        $creator->partner_id = $user->id;
+                        $creator->save();
+                    }
+                }
+            }
+        }
 
         Auth::login($user);
 

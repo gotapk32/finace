@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gastos-v2';
+const CACHE_NAME = 'gastos-v3';
 const ASSETS = [
     '/',
     '/css/style.css',
@@ -34,11 +34,11 @@ self.addEventListener('fetch', event => {
 });
 
 self.addEventListener('push', event => {
-    const data = event.data ? event.data.json() : { title: 'Nueva Alerta', body: 'Tienes una notificación nueva.' };
+    const data = event.data ? event.data.json() : { title: 'M&O Gastos', body: 'Tienes una notificación nueva.' };
     const options = {
         body: data.body,
-        icon: 'https://cdn-icons-png.flaticon.com/512/2845/2845874.png',
-        badge: 'https://cdn-icons-png.flaticon.com/512/2845/2845874.png',
+        icon: '/images/logo.png',
+        badge: '/images/logo.png',
         vibrate: [100, 50, 100],
         data: { url: '/' }
     };

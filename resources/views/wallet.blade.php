@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Cartera')
+@section('title', 'Configuraciones')
 
 @section('content')
 <div class="tabs" style="display: flex; gap: 10px; margin-bottom: 1.5rem; overflow-x: auto; padding-bottom: 5px;">
@@ -93,12 +93,41 @@
         @else
             <h3 style="font-weight: 900;">Vincular Pareja</h3>
             <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 2rem;">Ingresa el correo de tu pareja para compartir gastos.</p>
+            
+            @if(isset($invitation))
+                <div class="stat-card" style="text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; margin-bottom: 2rem;">
+                    <p style="font-size: 0.6rem; font-weight: 800; color: var(--primary); margin-bottom: 10px;">TU LINK DE INVITACIÓN</p>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" value="{{ route('invitation.register', $invitation->token) }}" readonly style="flex: 1; font-size: 0.7rem; padding: 10px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                        <button onclick="copyInviteLink('{{ route('invitation.register', $invitation->token) }}')" class="btn-primary" style="width: auto; padding: 10px 20px;">COPIAR</button>
+                    </div>
+                    <p style="font-size: 0.6rem; color: var(--text-muted); margin-top: 10px;">
+                        Estado: <strong>{{ strtoupper($invitation->status) }}</strong>
+                    </p>
+                </div>
+            @else
+                <form action="{{ route('user.invitations.store') }}" method="POST" style="margin-bottom: 2rem;">
+                    @csrf
+                    <div class="form-group">
+                        <label>Invitar a alguien nuevo</label>
+                        <input type="email" name="email" placeholder="correo-pareja@ejemplo.com" required>
+                    </div>
+                    <button type="submit" class="btn-primary">GENERAR LINK DE REGISTRO</button>
+                    <p style="font-size: 0.55rem; color: var(--text-muted); margin-top: 8px; text-align: left;">
+                        * Solo puedes generar 1 link de invitación. Si tu pareja ya tiene cuenta, usa el buscador de abajo.
+                    </p>
+                </form>
+            @endif
+
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 2rem 0;">
+
             <form action="{{ route('link-partner') }}" method="POST">
                 @csrf
                 <div class="form-group">
+                    <label>Si ya tiene cuenta, busca su email</label>
                     <input type="email" name="partner_email" placeholder="correo@ejemplo.com" required>
                 </div>
-                <button class="btn-primary">ENVIAR INVITACIÓN</button>
+                <button type="submit" class="btn-primary" style="background: var(--card-bg); color: var(--primary); border: 2px solid var(--primary);">BUSCAR Y VINCULAR</button>
             </form>
 
             <div id="pending-invitations-list" style="margin-top: 2rem; text-align: left;">
@@ -219,6 +248,12 @@
         document.getElementById('rec-id').value = '';
         document.getElementById('recurring-form-wallet').reset();
         document.getElementById('cancel-rec-edit').style.display = 'none';
+    }
+
+    function copyInviteLink(link) {
+        navigator.clipboard.writeText(link).then(() => {
+            window.showToast('¡Link copiado al portapapeles!');
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {

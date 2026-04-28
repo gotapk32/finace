@@ -63,6 +63,10 @@
 
             <form action="{{ route('register') }}" method="POST">
                 @csrf
+                @if(isset($token))
+                    <input type="hidden" name="token" value="{{ $token }}">
+                @endif
+
                 <div class="form-group">
                     <label for="name">Nombre</label>
                     <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus>
@@ -70,7 +74,7 @@
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+                    <input type="email" id="email" name="email" value="{{ $email ?? old('email') }}" {{ isset($email) ? 'readonly' : '' }} required>
                     @error('email') <p class="error-msg">{{ $message }}</p> @enderror
                 </div>
                 <div class="form-row">

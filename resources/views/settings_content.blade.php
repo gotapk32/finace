@@ -63,10 +63,18 @@
         <i class="fas fa-mobile-alt" style="font-size: 1.2rem; color: var(--primary);"></i>
     </div>
 
-    <div class="action-card" onclick="window.requestNotifications()" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; cursor: pointer; margin-bottom: 10px;">
+    <div class="action-card" onclick="window.requestNotifications()" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; cursor: pointer; margin-bottom: 5px;">
         <span style="font-weight: 800;">Activar Notificaciones Push</span>
         <i class="fas fa-bell" style="font-size: 1.2rem;"></i>
     </div>
+    <p id="ios-note" style="display: none; font-size: 0.6rem; color: var(--text-muted); margin-bottom: 10px; padding: 0 5px;">
+        Nota: En iPhone, debes instalar la app (Añadir a pantalla de inicio) para activar notificaciones.
+    </p>
+    <script>
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !window.navigator.standalone) {
+            document.getElementById('ios-note').style.display = 'block';
+        }
+    </script>
 
     <div class="action-card" onclick="window.toggleDarkMode()" style="display: flex; align-items: center; justify-content: space-between; padding: 1rem; cursor: pointer;">
         <span style="font-weight: 800;">Cambiar Modo (Oscuro/Claro)</span>

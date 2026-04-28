@@ -6,6 +6,7 @@
     <title>M&O - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <meta name="theme-color" content="#6366f1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -86,7 +87,12 @@
             </div>
             <i class="fas fa-moon" onclick="window.toggleDarkMode()" style="cursor:pointer;"></i>
             <div style="text-align:right">
-                <p style="font-size:0.7rem; font-weight:800; color:var(--text-muted)">Hola, {{ Auth::user()->name }}</p>
+                <p style="font-size:0.7rem; font-weight:800; color:var(--text-muted)">
+                    @if(Auth::user()->is_admin)
+                        <a href="{{ route('admin.index') }}" style="color:var(--primary); text-decoration:none; margin-right:10px;">ADMIN ⚡</a>
+                    @endif
+                    Hola, {{ Auth::user()->name }}
+                </p>
                 <form action="{{ route('logout') }}" method="POST">@csrf<button style="border:none; background:transparent; color:var(--secondary); font-weight:900; font-size:0.6rem; cursor:pointer;">CERRAR SESIÓN</button></form>
             </div>
         </div>
@@ -194,9 +200,15 @@
             <span>Límites</span>
         </a>
         <a href="{{ route('wallet') }}" class="nav-item {{ request()->routeIs('wallet') ? 'active' : '' }}">
-            <i class="fas fa-wallet"></i>
-            <span>Billetera</span>
+            <i class="fas fa-cog"></i>
+            <span>Configuración</span>
         </a>
+        @if(Auth::user()->is_admin)
+            <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.index') ? 'active' : '' }}">
+                <i class="fas fa-user-shield"></i>
+                <span>Admin</span>
+            </a>
+        @endif
     </div>
 
     <!-- PANEL DE NOTIFICACIONES -->

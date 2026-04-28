@@ -85,11 +85,32 @@ window.installApp = async () => {
 };
 
 window.requestNotifications = async () => {
+    if (!('Notification' in window)) {
+        window.showToast('Tu navegador no soporta notificaciones', 'error');
+        return;
+    }
+
     const permission = await Notification.requestPermission();
     if (permission === 'granted') {
         window.showToast('¡Notificaciones activadas!');
-    } else {
-        window.showToast('Notificaciones bloqueadas', 'error');
+        
+        // Enviar notificación de prueba
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification('M&O Gastos', {
+                    body: '¡Listo! Las notificaciones están activas.',
+                    icon: '/images/logo.png',
+                    badge: '/images/logo.png'
+                });
+            });
+        } else {
+            new Notification('M&O Gastos', {
+                body: '¡Listo! Las notificaciones están activas.',
+                icon: '/images/logo.png'
+            });
+        }
+    } else if (permission === 'denied') {
+        window.showToast('Notificaciones bloqueadas por el navegador', 'error');
     }
 };
 
