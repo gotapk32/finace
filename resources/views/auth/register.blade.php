@@ -57,7 +57,7 @@
     <div class="auth-container">
         <div class="card glass auth-card">
             <div class="auth-header">
-                <h1>GASTOS<span>.</span></h1>
+                <h1>M&O<span>.</span></h1>
                 <p>Crea tu cuenta de pareja</p>
             </div>
 

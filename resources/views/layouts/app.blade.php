@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>M&O - @yield('title')</title>
+    <title>M&O Finance - @yield('title')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="manifest" href="/manifest.json">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo_mo.png') }}">
     <meta name="theme-color" content="#6366f1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
@@ -75,11 +75,31 @@
             width: 100%; padding: 1rem; border-radius: 16px; border: 1px solid #e2e8f0; 
             background: #f8fafc; font-family: inherit; font-weight: 600; font-size: 0.9rem;
         }
+        /* Install Banner */
+        #install-banner {
+            background: linear-gradient(135deg, var(--primary), #4f46e5);
+            color: white; padding: 12px 20px; display: none;
+            position: sticky; top: 0; z-index: 2000;
+            justify-content: space-between; align-items: center;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        #install-banner p { font-size: 0.75rem; font-weight: 800; margin: 0; }
+        #install-banner button { 
+            background: white; color: var(--primary); border: none; padding: 6px 15px; 
+            border-radius: 10px; font-weight: 900; font-size: 0.65rem; cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    <div id="install-banner">
+        <p><i class="fas fa-mobile-alt"></i> Instala la App para una mejor experiencia</p>
+        <button id="install-btn">INSTALAR</button>
+    </div>
     <header class="header">
-        <div class="logo">M&O<span style="color:var(--secondary)">.</span></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="{{ asset('images/logo_mo.png') }}" alt="M&O" style="width: 35px; height: 35px; border-radius: 8px;">
+            <div class="logo">M&O<span style="color:var(--secondary)">.</span></div>
+        </div>
         <div style="display:flex; align-items:center; gap:15px;">
             <div style="position:relative; cursor:pointer;" onclick="window.toggleNotifications()">
                 <i class="fas fa-bell" style="font-size:1.2rem; color:var(--text-main);"></i>

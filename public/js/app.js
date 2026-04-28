@@ -1,3 +1,39 @@
+// PWA Installation Logic
+let deferredPrompt;
+const installBanner = document.getElementById('install-banner');
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBanner) installBanner.style.display = 'flex';
+});
+
+if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            if (installBanner) installBanner.style.display = 'none';
+        }
+        deferredPrompt = null;
+    });
+}
+
+// Ocultar si ya está instalada (standalone)
+if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+    if (installBanner) installBanner.style.display = 'none';
+} else {
+    // Si es iOS, mostrar instrucción personalizada (iOS no soporta beforeinstallprompt)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (isIOS && installBanner) {
+        installBanner.style.display = 'flex';
+        installBanner.querySelector('p').innerHTML = '<i class="fas fa-share-square"></i> Dale a "Compartir" y "Añadir a pantalla de inicio"';
+        if (installBtn) installBtn.style.display = 'none';
+    }
+}
+
 // Global Utilities
 window.formatCurrency = (amount) => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(amount || 0);
 window.formatDate = (dateStr) => new Date(dateStr + 'T00:00:00').toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
@@ -63,14 +99,8 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    // Mostrar botón de instalación si existe
-    const installBtn = document.getElementById('install-pwa');
-    if (installBtn) installBtn.style.display = 'flex';
-});
+// Global PWA prompt handler is at the top of this file
+
 
 window.installApp = async () => {
     if (deferredPrompt) {

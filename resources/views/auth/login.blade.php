@@ -59,8 +59,8 @@
     <div class="auth-container">
         <div class="card glass auth-card">
             <div class="auth-header">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo" style="width: 80px; height: 80px; margin-bottom: 1rem; border-radius: 18px; box-shadow: var(--shadow);">
-                <h1>GASTOS<span>.</span></h1>
+                <img src="{{ asset('images/logo_mo.png') }}" alt="Logo" style="width: 80px; height: 80px; margin-bottom: 1rem; border-radius: 18px; box-shadow: var(--shadow);">
+                <h1>M&O<span>.</span></h1>
                 <p>Inicia sesión para continuar</p>
             </div>
 
