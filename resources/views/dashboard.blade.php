@@ -28,13 +28,13 @@
 <div class="summary-section" style="margin-bottom: 2rem;">
     <!-- TARJETAS DE HOY Y MES -->
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
-        <div class="stat-card" style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%); color: white; padding: 1.5rem;">
-            <p style="font-size: 0.6rem; font-weight: 800; opacity: 0.8; text-transform: uppercase;">Gastado Hoy</p>
-            <h2 id="total-day" style="font-size: 1.8rem; font-weight: 900; margin: 5px 0;">$0</h2>
+        <div class="stat-card" style="padding: 1.5rem; border-top: 4px solid var(--primary);">
+            <p style="font-size: 0.6rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Gastado Hoy</p>
+            <h2 id="total-day" style="font-size: 1.8rem; font-weight: 900; margin: 5px 0; color: var(--primary);">$0</h2>
         </div>
-        <div class="stat-card" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; padding: 1.5rem;">
-            <p style="font-size: 0.6rem; font-weight: 800; opacity: 0.8; text-transform: uppercase;">Total del Mes</p>
-            <h2 id="total-month" style="font-size: 1.8rem; font-weight: 900; margin: 5px 0;">$0</h2>
+        <div class="stat-card" style="padding: 1.5rem; border-top: 4px solid #0f172a;">
+            <p style="font-size: 0.6rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Total del Mes</p>
+            <h2 id="total-month" style="font-size: 1.8rem; font-weight: 900; margin: 5px 0; color: var(--text-main);">$0</h2>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,33 +17,40 @@
             min-height: 100vh;
             padding: 20px;
         }
+
         .auth-card {
             width: 100%;
             max-width: 400px;
             padding: 2.5rem;
         }
+
         .auth-header {
             text-align: center;
             margin-bottom: 2rem;
         }
+
         .auth-header h1 {
             font-size: 2.5rem;
             margin-bottom: 0.5rem;
         }
+
         .auth-header p {
             color: var(--text-muted);
         }
+
         .error-msg {
             color: var(--primary);
             font-size: 0.85rem;
             margin-top: 0.5rem;
         }
+
         .footer-link {
             text-align: center;
             margin-top: 1.5rem;
             font-size: 0.9rem;
             color: var(--text-muted);
         }
+
         .footer-link a {
             color: var(--primary);
             text-decoration: none;
@@ -50,6 +58,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="background-blobs">
         <div class="blob blob-1"></div>
@@ -59,7 +68,8 @@
     <div class="auth-container">
         <div class="card glass auth-card">
             <div class="auth-header">
-                <img src="{{ asset('images/logo_mo.png') }}" alt="Logo" style="width: 80px; height: 80px; margin-bottom: 1rem; border-radius: 18px; box-shadow: var(--shadow);">
+                <img src="{{ asset('images/logo_mo.png') }}" alt="Logo"
+                    style="width: 80px; height: 80px; margin-bottom: 1rem; border-radius: 18px; box-shadow: var(--shadow);">
                 <h1>M&O<span>.</span></h1>
                 <p>Inicia sesión para continuar</p>
             </div>
@@ -79,18 +89,22 @@
                 <button type="submit" class="btn-primary">Entrar</button>
             </form>
 
-            <div class="footer-link">
+            <!-- <div class="footer-link">
                 ¿No tienes cuenta? <a href="{{ route('register') }}">Regístrate</a>
-            </div>
+            </div> -->
 
-            <div style="margin-top: 2rem; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 15px; border: 1px solid rgba(99, 102, 241, 0.1); display: flex; align-items: center; gap: 12px; text-align: left;">
+            <div
+                style="margin-top: 2rem; padding: 1rem; background: rgba(99, 102, 241, 0.05); border-radius: 15px; border: 1px solid rgba(99, 102, 241, 0.1); display: flex; align-items: center; gap: 12px; text-align: left;">
                 <i class="fas fa-shield-halved" style="color: var(--primary); font-size: 1.2rem;"></i>
                 <p style="font-size: 0.65rem; line-height: 1.4; color: var(--text-muted); margin: 0;">
-                    <strong style="color: var(--primary); display: block; margin-bottom: 2px;">SEGURIDAD DE DATOS</strong>
-                    Tus gastos y sueldos están protegidos con cifrado de grado bancario. Solo tú y tu pareja pueden ver la información.
+                    <strong style="color: var(--primary); display: block; margin-bottom: 2px;">SEGURIDAD DE
+                        DATOS</strong>
+                    Tus gastos y sueldos están protegidos con cifrado de grado bancario. Solo tú y tu pareja pueden ver
+                    la información.
                 </p>
             </div>
         </div>
     </div>
 </body>
+
 </html>
