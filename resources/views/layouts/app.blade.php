@@ -210,6 +210,11 @@
             <i class="fas fa-search-dollar"></i>
             <span>Gastos</span>
         </a>
+
+        <a href="{{ route('trips.index') }}" class="nav-item {{ request()->routeIs('trips.*') ? 'active' : '' }}">
+            <i class="fas fa-plane"></i>
+            <span>Viajes</span>
+        </a>
         
         <a href="{{ route('expenses.create') }}" class="nav-center">
             <i class="fas fa-plus"></i>

@@ -7,6 +7,7 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\TripController;
 
 Route::middleware('auth')->group(function () {
     // Page Routes
@@ -20,6 +21,9 @@ Route::middleware('auth')->group(function () {
         return view('wallet', compact('invitation')); 
     })->name('wallet');
     Route::get('/presupuestos', function() { return view('budgets.index'); })->name('budgets.index');
+    Route::get('/viajes', [TripController::class, 'viewIndex'])->name('trips.index');
+    Route::get('/viajes/nuevo', [TripController::class, 'viewCreate'])->name('trips.create');
+    Route::get('/viajes/{id}', [TripController::class, 'viewShow'])->name('trips.show');
     Route::get('/ajustes', function() { return view('settings'); })->name('settings');
 
     Route::post('/link-partner', [AuthController::class, 'linkPartner'])->name('link-partner');
@@ -56,6 +60,12 @@ Route::middleware('auth')->group(function () {
         Route::put('/budgets/{id}', [BudgetController::class, 'update']);
         Route::delete('/budgets/{id}', [BudgetController::class, 'destroy']);
         Route::get('/budgets/report', [BudgetController::class, 'report']);
+
+        Route::get('/trips', [TripController::class, 'index']);
+        Route::post('/trips', [TripController::class, 'store']);
+        Route::put('/trips/{id}', [TripController::class, 'update']);
+        Route::delete('/trips/{id}', [TripController::class, 'destroy']);
+        Route::get('/trips/{id}/summary', [TripController::class, 'summary']);
     });
 });
 

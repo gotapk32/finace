@@ -9,7 +9,7 @@ class Expense extends Model
     protected $fillable = [
         'name', 'amount', 'date', 'payer', 'image', 
         'user_id', 'type', 'debt_direction', 'is_personal', 'is_recurring', 'is_active', 
-        'payment_method_id', 'due_day', 'category_id'
+        'payment_method_id', 'due_day', 'category_id', 'trip_id'
     ];
 
     public function category()
@@ -25,6 +25,11 @@ class Expense extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function trip()
+    {
+        return $this->belongsTo(Trip::class);
     }
 
     protected $casts = [

@@ -49,6 +49,7 @@ class ExpenseController extends Controller
             'payment_method_id' => 'nullable|exists:payment_methods,id',
             'due_day' => 'nullable|integer',
             'is_active' => 'boolean',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
         if ($request->hasFile('image_file')) {
@@ -79,6 +80,7 @@ class ExpenseController extends Controller
             'category_id' => 'exists:categories,id',
             'payment_method_id' => 'nullable|exists:payment_methods,id',
             'due_day' => 'nullable|integer',
+            'trip_id' => 'nullable|exists:trips,id',
         ]);
 
         if ($request->has('is_personal')) $validated['is_personal'] = $request->boolean('is_personal');

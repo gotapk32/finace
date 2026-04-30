@@ -110,6 +110,13 @@
                 <select name="payment_method_id" class="method-selector"></select>
             </div>
 
+            <div class="form-group" id="trip-group">
+                <label>Vincular a un Viaje (Opcional)</label>
+                <select name="trip_id" id="trip-selector">
+                    <option value="">Ninguno</option>
+                </select>
+            </div>
+
             <div class="form-group" id="photo-group">
                 <label>Foto del Recibo (Opcional)</label>
                 <div class="file-input-wrapper" id="preview-container">
@@ -245,17 +252,30 @@
         await window.fetchMethods();
         await window.fetchSummary(); // Para los pagadores
 
-        // Establecer fecha de hoy local si no es edición
-        if (!editId) {
-            const today = new Date();
-            const offset = today.getTimezoneOffset();
-            const localDate = new Date(today.getTime() - (offset * 60 * 1000)).toISOString().split('T')[0];
-            document.getElementById('f-date').value = localDate;
-            document.getElementById('f-date').setAttribute('max', localDate);
+        // Cargar viajes activos (disponible tanto para nuevo como para editar)
+        try {
+            const tripsRes = await fetch('/api/trips');
+            const trips = await tripsRes.json();
+            const tripSelector = document.getElementById('trip-selector');
+            const activeTrips = trips.filter(t => t.is_active);
+            activeTrips.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t.id;
+                opt.textContent = t.name;
+                tripSelector.appendChild(opt);
+            });
+
+            // Si viene trip_id por URL, seleccionarlo
+            const tripParam = params.get('trip_id');
+            if (tripParam) {
+                tripSelector.value = tripParam;
+            }
+        } catch (e) {
+            console.error("Error cargando viajes:", e);
         }
 
         if (editId) {
-            // Lógica de carga para edición (simplificada para este demo)
+            // Lógica de carga para edición
             const res = await fetch('/api/expenses');
             const expenses = await res.json();
             const exp = expenses.find(e => e.id == editId);
@@ -267,10 +287,20 @@
                 document.getElementById('category-selector').value = exp.category_id;
                 document.getElementById('payer-select').value = exp.payer;
                 
+                const tripIdFromExp = exp.trip_id;
+                if (tripIdFromExp) document.getElementById('trip-selector').value = tripIdFromExp;
+
                 selectType(exp.is_recurring ? 'recurring' : (exp.type === 'deuda' ? 'debt' : (exp.is_personal ? 'personal' : 'shared')));
             }
         } else {
-            // Manejo de modo para nuevos registros
+            // Nuevo registro
+            const today = new Date();
+            const offset = today.getTimezoneOffset();
+            const localDate = new Date(today.getTime() - (offset * 60 * 1000)).toISOString().split('T')[0];
+            document.getElementById('f-date').value = localDate;
+            document.getElementById('f-date').setAttribute('max', localDate);
+
+            // Manejo de modo inicial
             const mode = params.get('mode');
             if (mode) selectType(mode);
         }
