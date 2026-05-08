@@ -111,6 +111,7 @@
                     @if(Auth::user()->is_admin)
                         <a href="{{ route('admin.index') }}" style="color:var(--primary); text-decoration:none; margin-right:10px;">ADMIN ⚡</a>
                     @endif
+                    <a href="{{ route('wallet') }}" style="color:var(--text-muted); text-decoration:none; margin-right:10px;"><i class="fas fa-cog"></i></a>
                     Hola, {{ Auth::user()->name }}
                 </p>
                 <form action="{{ route('logout') }}" method="POST">@csrf<button style="border:none; background:transparent; color:var(--secondary); font-weight:900; font-size:0.6rem; cursor:pointer;">CERRAR SESIÓN</button></form>
@@ -211,29 +212,24 @@
             <span>Gastos</span>
         </a>
 
-        <a href="{{ route('trips.index') }}" class="nav-item {{ request()->routeIs('trips.*') ? 'active' : '' }}">
-            <i class="fas fa-plane"></i>
-            <span>Viajes</span>
+        <a href="{{ route('shopping.index') }}" class="nav-item {{ request()->routeIs('shopping.*') ? 'active' : '' }}">
+            <i class="fas fa-shopping-cart"></i>
+            <span>Compras</span>
         </a>
         
         <a href="{{ route('expenses.create') }}" class="nav-center">
             <i class="fas fa-plus"></i>
         </a>
 
+        <a href="{{ route('trips.index') }}" class="nav-item {{ request()->routeIs('trips.*') ? 'active' : '' }}">
+            <i class="fas fa-plane"></i>
+            <span>Viajes</span>
+        </a>
+
         <a href="{{ route('budgets.index') }}" class="nav-item {{ request()->routeIs('budgets.index') ? 'active' : '' }}">
             <i class="fas fa-bullseye"></i>
             <span>Límites</span>
         </a>
-        <a href="{{ route('wallet') }}" class="nav-item {{ request()->routeIs('wallet') ? 'active' : '' }}">
-            <i class="fas fa-cog"></i>
-            <span>Configuración</span>
-        </a>
-        @if(Auth::user()->is_admin)
-            <a href="{{ route('admin.index') }}" class="nav-item {{ request()->routeIs('admin.index') ? 'active' : '' }}">
-                <i class="fas fa-user-shield"></i>
-                <span>Admin</span>
-            </a>
-        @endif
     </div>
 
     <!-- PANEL DE NOTIFICACIONES -->

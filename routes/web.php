@@ -8,6 +8,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\ShoppingController;
 
 Route::middleware('auth')->group(function () {
     // Page Routes
@@ -25,6 +26,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/viajes/nuevo', [TripController::class, 'viewCreate'])->name('trips.create');
     Route::get('/viajes/{id}', [TripController::class, 'viewShow'])->name('trips.show');
     Route::get('/ajustes', function() { return view('settings'); })->name('settings');
+
+    // Shopping Routes
+    Route::get('/compras', [ShoppingController::class, 'index'])->name('shopping.index');
+    Route::post('/compras', [ShoppingController::class, 'storeList'])->name('shopping.store');
+    Route::get('/compras/historial', [ShoppingController::class, 'itemsHistory'])->name('shopping.history');
+    Route::get('/compras/producto/{id}', [ShoppingController::class, 'itemDetails'])->name('shopping.item_details');
+    Route::get('/compras/{id}', [ShoppingController::class, 'show'])->name('shopping.show');
+    Route::post('/compras/{id}/items', [ShoppingController::class, 'addItem'])->name('shopping.addItem');
+    Route::post('/compras/items/{id}/buy', [ShoppingController::class, 'markAsBought'])->name('shopping.buyItem');
+    Route::delete('/compras/items/{id}', [ShoppingController::class, 'deleteItem'])->name('shopping.deleteItem');
+    Route::delete('/compras/{id}', [ShoppingController::class, 'deleteList'])->name('shopping.deleteList');
 
     Route::post('/link-partner', [AuthController::class, 'linkPartner'])->name('link-partner');
     Route::post('/unlink-partner', [AuthController::class, 'unlinkPartner'])->name('unlink-partner');

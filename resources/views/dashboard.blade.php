@@ -74,14 +74,18 @@
     </div>
 
     <!-- BOTONES DE ACCIÓN RÁPIDA -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8rem; margin-bottom: 2rem;">
         <div class="action-card" onclick="location.href='{{ route('expenses.create') }}?mode=shared'" style="padding: 1.2rem;">
             <i class="fas fa-users" style="font-size: 1.2rem; color: var(--primary);"></i>
-            <span style="font-weight: 900; font-size: 0.6rem;">COMPARTIDO</span>
+            <span style="font-weight: 900; font-size: 0.55rem;">COMPARTIDO</span>
         </div>
         <div class="action-card" onclick="location.href='{{ route('expenses.create') }}?mode=personal'" style="padding: 1.2rem;">
             <i class="fas fa-user-lock" style="font-size: 1.2rem; color: var(--secondary);"></i>
-            <span style="font-weight: 900; font-size: 0.6rem;">PERSONAL</span>
+            <span style="font-weight: 900; font-size: 0.55rem;">PERSONAL</span>
+        </div>
+        <div class="action-card" onclick="location.href='{{ route('shopping.index') }}'" style="padding: 1.2rem; border-color: var(--accent);">
+            <i class="fas fa-shopping-cart" style="font-size: 1.2rem; color: var(--accent);"></i>
+            <span style="font-weight: 900; font-size: 0.55rem;">COMPRAS</span>
         </div>
     </div>
 
