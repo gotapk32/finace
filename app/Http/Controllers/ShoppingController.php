@@ -42,7 +42,41 @@ class ShoppingController extends Controller
             ->with('items.item')
             ->findOrFail($id);
 
-        return view('shopping.show', compact('list'));
+        $existingItems = ShoppingItem::where('user_id', Auth::id())->get();
+
+        return view('shopping.show', compact('list', 'existingItems'));
+    }
+
+    public function convertToExpense(Request $request, $id)
+    {
+        $list = ShoppingList::where('user_id', Auth::id())
+            ->with('items.item')
+            ->findOrFail($id);
+
+        $total = $list->items->where('is_bought', true)->sum(function($item) {
+            return (float)$item->price;
+        });
+
+        if ($total <= 0) {
+            return back()->with('error', 'No hay ítems comprados con precio registrado.');
+        }
+
+        // Create the expense
+        \App\Models\Expense::create([
+            'name' => 'Compra: ' . $list->name,
+            'amount' => $total,
+            'date' => now(),
+            'user_id' => Auth::id(),
+            'category_id' => 16, // ID for Supermercado
+            'type' => 'gasto',
+            'payer' => Auth::user()->name,
+            'is_personal' => false,
+            'is_active' => true
+        ]);
+
+        $list->update(['status' => 'completed']);
+
+        return redirect()->route('dashboard')->with('status', 'Gasto registrado correctamente por $' . number_format($total, 2));
     }
 
     public function addItem(Request $request, $listId)

@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/compras/items/{id}/buy', [ShoppingController::class, 'markAsBought'])->name('shopping.buyItem');
     Route::delete('/compras/items/{id}', [ShoppingController::class, 'deleteItem'])->name('shopping.deleteItem');
     Route::delete('/compras/{id}', [ShoppingController::class, 'deleteList'])->name('shopping.deleteList');
+    Route::post('/compras/{id}/convert', [ShoppingController::class, 'convertToExpense'])->name('shopping.convertToExpense');
 
     Route::post('/link-partner', [AuthController::class, 'linkPartner'])->name('link-partner');
     Route::post('/unlink-partner', [AuthController::class, 'unlinkPartner'])->name('unlink-partner');

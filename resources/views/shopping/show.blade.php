@@ -27,8 +27,13 @@
     <h3 style="font-weight: 900; font-size: 0.8rem; margin-bottom: 1rem; color: var(--accent);">AGREGAR ÍTEM</h3>
     <form action="{{ route('shopping.addItem', $list->id) }}" method="POST" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 10px;">
         @csrf
-        <input type="text" name="name" placeholder="Producto (ej: Leche)" required 
+        <input type="text" name="name" placeholder="Producto (ej: Leche)" required list="existing-items"
                style="padding: 0.8rem; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; font-weight: 600;">
+        <datalist id="existing-items">
+            @foreach($existingItems as $existing)
+                <option value="{{ $existing->name }}">
+            @endforeach
+        </datalist>
         <input type="number" name="quantity" value="1" step="0.1" required 
                style="padding: 0.8rem; border-radius: 12px; border: 1px solid #e2e8f0; font-family: inherit; font-weight: 600;">
         <button type="submit" class="btn-primary" style="width: 50px; height: 50px; border-radius: 12px; padding: 0;">
@@ -36,6 +41,22 @@
         </button>
     </form>
 </div>
+
+@if($list->items->where('is_bought', true)->count() > 0 && $list->status == 'active')
+    <div class="stat-card" style="margin-bottom: 2rem; background: var(--primary); color: white; padding: 1.5rem; text-align: center;">
+        <p style="font-size: 0.6rem; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; opacity: 0.8;">Lista en curso</p>
+        <h3 style="font-weight: 900; font-size: 1.2rem; margin-bottom: 15px;">
+            Total: ${{ number_format($list->items->where('is_bought', true)->sum(fn($i) => (float)$i->price), 2) }}
+        </h3>
+        <form action="{{ route('shopping.convertToExpense', $list->id) }}" method="POST">
+            @csrf
+            <button class="btn-primary" style="background: white; color: var(--primary); font-size: 0.75rem;">
+                FINALIZAR Y REGISTRAR GASTO ⚡
+            </button>
+        </form>
+        <p style="font-size: 0.55rem; margin-top: 10px; opacity: 0.7;">Esto sumará el total a tu control de gastos del mes automáticamente.</p>
+    </div>
+@endif
 
 <div style="display: grid; gap: 12px;">
     @php
