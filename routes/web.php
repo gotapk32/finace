@@ -35,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/compras/{id}', [ShoppingController::class, 'show'])->name('shopping.show');
     Route::post('/compras/{id}/items', [ShoppingController::class, 'addItem'])->name('shopping.addItem');
     Route::post('/compras/items/{id}/buy', [ShoppingController::class, 'markAsBought'])->name('shopping.buyItem');
+    Route::post('/compras/items/{id}/toggle-type', [ShoppingController::class, 'toggleItemType'])->name('shopping.toggleItemType');
     Route::delete('/compras/items/{id}', [ShoppingController::class, 'deleteItem'])->name('shopping.deleteItem');
     Route::delete('/compras/{id}', [ShoppingController::class, 'deleteList'])->name('shopping.deleteList');
     Route::post('/compras/{id}/convert', [ShoppingController::class, 'convertToExpense'])->name('shopping.convertToExpense');

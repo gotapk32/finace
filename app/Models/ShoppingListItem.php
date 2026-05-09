@@ -6,11 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class ShoppingListItem extends Model
 {
-    protected $fillable = ['shopping_list_id', 'shopping_item_id', 'quantity', 'price', 'is_bought'];
+    protected $fillable = ['shopping_list_id', 'shopping_item_id', 'quantity', 'price', 'is_bought', 'is_personal'];
 
     protected $casts = [
         'price' => 'encrypted',
         'is_bought' => 'boolean',
+        'is_personal' => 'boolean',
     ];
 
     public function shoppingList()

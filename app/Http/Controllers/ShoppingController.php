@@ -53,30 +53,97 @@ class ShoppingController extends Controller
             ->with('items.item')
             ->findOrFail($id);
 
-        $total = $list->items->where('is_bought', true)->sum(function($item) {
-            return (float)$item->price;
-        });
+        $boughtItems = $list->items->where('is_bought', true);
+        
+        $sharedTotal = (float) $boughtItems->where('is_personal', false)->sum(fn($i) => (float)$i->price);
+        $personalTotal = (float) $boughtItems->where('is_personal', true)->sum(fn($i) => (float)$i->price);
 
-        if ($total <= 0) {
+        if ($sharedTotal <= 0 && $personalTotal <= 0) {
             return back()->with('error', 'No hay ítems comprados con precio registrado.');
         }
 
-        // Create the expense
-        \App\Models\Expense::create([
-            'name' => 'Compra: ' . $list->name,
-            'amount' => $total,
-            'date' => now(),
-            'user_id' => Auth::id(),
-            'category_id' => 16, // ID for Supermercado
-            'type' => 'gasto',
-            'payer' => Auth::user()->name,
-            'is_personal' => false,
-            'is_active' => true
-        ]);
+        // Create the Personal Expense (Always paid by the current user)
+        if ($personalTotal > 0) {
+            \App\Models\Expense::create([
+                'name' => 'Súper (Personal): ' . $list->name,
+                'amount' => $personalTotal,
+                'date' => now(),
+                'user_id' => Auth::id(),
+                'category_id' => 16,
+                'type' => 'gasto',
+                'payer' => Auth::user()->name,
+                'is_personal' => true,
+                'is_active' => true
+            ]);
+        }
+
+        // Handle the Shared part based on payer option
+        if ($sharedTotal > 0) {
+            $payerOption = $request->input('payer_option', 'me'); // me, partner, split
+            
+            if ($payerOption === 'split') {
+                $mePaid = (float) $request->input('me_paid', 0);
+                $partnerPaid = (float) $request->input('partner_paid', 0);
+                
+                if ($mePaid > 0) {
+                    \App\Models\Expense::create([
+                        'name' => 'Súper (Compartido): ' . $list->name,
+                        'amount' => $mePaid,
+                        'date' => now(),
+                        'user_id' => Auth::id(),
+                        'category_id' => 16,
+                        'type' => 'gasto',
+                        'payer' => Auth::user()->name,
+                        'is_personal' => false,
+                        'is_active' => true
+                    ]);
+                }
+                
+                if ($partnerPaid > 0 && Auth::user()->partner) {
+                    \App\Models\Expense::create([
+                        'name' => 'Súper (Compartido): ' . $list->name,
+                        'amount' => $partnerPaid,
+                        'date' => now(),
+                        'user_id' => Auth::id(),
+                        'category_id' => 16,
+                        'type' => 'gasto',
+                        'payer' => Auth::user()->partner->name,
+                        'is_personal' => false,
+                        'is_active' => true
+                    ]);
+                }
+            } else {
+                $payerName = ($payerOption === 'partner' && Auth::user()->partner) 
+                    ? Auth::user()->partner->name 
+                    : Auth::user()->name;
+
+                \App\Models\Expense::create([
+                    'name' => 'Súper (Compartido): ' . $list->name,
+                    'amount' => $sharedTotal,
+                    'date' => now(),
+                    'user_id' => Auth::id(),
+                    'category_id' => 16,
+                    'type' => 'gasto',
+                    'payer' => $payerName,
+                    'is_personal' => false,
+                    'is_active' => true
+                ]);
+            }
+        }
 
         $list->update(['status' => 'completed']);
 
-        return redirect()->route('dashboard')->with('status', 'Gasto registrado correctamente por $' . number_format($total, 2));
+        return redirect()->route('dashboard')->with('status', 'Compra de ' . $list->name . ' registrada exitosamente.');
+    }
+
+    public function toggleItemType($id)
+    {
+        $item = ShoppingListItem::findOrFail($id);
+        if ($item->shoppingList->user_id !== Auth::id()) abort(403);
+
+        $item->update(['is_personal' => !$item->is_personal]);
+
+        return back();
     }
 
     public function addItem(Request $request, $listId)
